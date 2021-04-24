@@ -1,31 +1,39 @@
-import { GetStaticPaths, GetStaticProps } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import styles from "./episode.module.scss";
-import { api } from "../../services/api";
-import { convertDurationToTimeString } from "../../utils/convertDurationToTimeString";
+import { GetStaticPaths, GetStaticProps } from 'next'
+import Image from 'next/image'
+import Link from 'next/link'
+import Head from 'next/head'
+import { format, parseISO } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import styles from './episode.module.scss'
+import { api } from '../../services/api'
+import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString'
+import { usePlayer } from '../../contexts/PlayerContext'
 
 type Episode = {
-  id: string;
-  title: string;
-  members: string;
-  publishedAt: string;
-  thumbnail: string;
-  duration: number;
-  durationAsString: string;
-  description: string;
-  url: string;
-};
+  id: string
+  title: string
+  members: string
+  publishedAt: string
+  thumbnail: string
+  duration: number
+  durationAsString: string
+  description: string
+  url: string
+}
 
 type EpisodeProps = {
-  episode: Episode;
-};
+  episode: Episode
+}
 
 export default function Episode({ episode }: EpisodeProps) {
+  const { play } = usePlayer()
+
   return (
     <div className={styles.episode}>
+      <Head>
+        <title>{episode.title} | Podcastr</title>
+      </Head>
+
       <div className={styles.thumbnailContainer}>
         <Link href="/">
           <button type="button">
@@ -40,7 +48,7 @@ export default function Episode({ episode }: EpisodeProps) {
           objectFit="cover"
         />
 
-        <button type="button">
+        <button type="button" onClick={() => play(episode)}>
           <img src="/play.svg" alt="Tocar episódio" />
         </button>
       </div>
@@ -57,43 +65,43 @@ export default function Episode({ episode }: EpisodeProps) {
         dangerouslySetInnerHTML={{ __html: episode.description }}
       />
     </div>
-  );
+  )
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
     paths: [
       {
-        params: { id: "a-importancia-da-contribuicao-em-open-source" },
+        params: { id: 'a-importancia-da-contribuicao-em-open-source' },
       },
     ],
-    fallback: "blocking",
-  };
-};
+    fallback: 'blocking',
+  }
+}
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
-  const { id } = ctx.params;
+  const { id } = ctx.params
 
-  const { data } = await api.get(`/episodes/${id}`);
+  const { data } = await api.get(`/episodes/${id}`)
 
   const episode = {
     id: data.id,
     title: data.title,
     thumbnail: data.thumbnail,
     members: data.members,
-    publishedAt: format(parseISO(data.published_at), "d MMM yy", {
+    publishedAt: format(parseISO(data.published_at), 'd MMM yy', {
       locale: ptBR,
     }),
     duration: Number(data.file.duration),
     durationAsString: convertDurationToTimeString(Number(data.file.duration)),
     description: data.description,
     url: data.file.url,
-  };
+  }
 
-  const VINTE_E_QUATRO_HORAS = 60 * 60 * 24;
+  const VINTE_E_QUATRO_HORAS = 60 * 60 * 24
 
   return {
     props: { episode },
     revalidate: VINTE_E_QUATRO_HORAS,
-  };
-};
+  }
+}

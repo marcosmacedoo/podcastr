@@ -1,4 +1,4 @@
-import Document, { Html, Head, Main, NextScript } from "next/document";
+import Document, { Html, Head, Main, NextScript } from 'next/document'
 
 export default class MyDocument extends Document {
   render() {
@@ -6,7 +6,7 @@ export default class MyDocument extends Document {
       <Html lang="pt-br">
         <Head>
           <meta charSet="UTF-8" />
-          <link rel="shortcut icon" href="/favicon.png" type="image/x-icon" />
+          <link rel="shortcut icon" href="/favicon.png" type="image/png" />
 
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
@@ -19,6 +19,6 @@ export default class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    );
+    )
   }
 }
