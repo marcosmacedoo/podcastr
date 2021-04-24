@@ -62,7 +62,11 @@ export default function Episode({ episode }: EpisodeProps) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: [],
+    paths: [
+      {
+        params: { id: "a-importancia-da-contribuicao-em-open-source" },
+      },
+    ],
     fallback: "blocking",
   };
 };
